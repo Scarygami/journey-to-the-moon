@@ -1,0 +1,19 @@
+application: journey-to-the-moon
+version: 1
+runtime: python27
+threadsafe: true
+api_version: 1
+
+handlers:
+- url: /(.*\.(html|css|js))
+  static_files: static/\1
+  upload: static/(.*\.(html|css|js))
+
+- url: /(.*\.png)
+  static_files: static/\1
+  upload: static/(.*\.png)
+  mime_type: image/png
+
+- url: /
+  static_files: static/index.html
+  upload: static/index.html
