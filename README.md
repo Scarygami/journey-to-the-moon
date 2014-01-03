@@ -29,10 +29,7 @@ By: Dan Wiersema
 Website: www.danwiersema.com
 
 License:
-Free for non-commercial use. These icons are only for personal use only.
-You may not redistribute or modify these icons.
-Distributing these icons commercially or using them with intent for
-monetary gain is prohibited.
+Free for non-commercial use.
 ```
 
 ```
