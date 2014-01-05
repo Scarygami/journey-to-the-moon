@@ -2,7 +2,7 @@
   "use strict";
   var
     doc = global.document, con = global.console, dropbox, locations, current, distance, dateDiv, travelledDiv, leftDiv, rocket,
-    total = 384400, km2miles = 0.621371, R = 6371, deg2rad = Math.PI / 180;
+    total = 384400, km2miles = 0.621371, R = 6371, deg2rad = Math.PI / 180, cityData;
 
   dropbox = doc.getElementById("dropbox");
   dateDiv = doc.getElementById("date");
@@ -47,7 +47,27 @@
       return dLat * dLat + dLon * dLon;
     } else {
       // Too big to be considered
-      return 100;
+      return false;
+    }
+  }
+
+  function citySort(a, b) {
+    return (a.distance - b.distance);
+  }
+
+  function findCity(lat, lon) {
+    var i, tmpCities = [], d;
+    for (i = 0; i < cityData.cities.length; i++) {
+      d = lazyDistance(lat, lon, cityData.cities[i].[1], cityData.cities[i].[2])
+      if (d !== false) {
+        tmpCities.push({"city": cityData.cities[i][0], "country": cityData.countries[cityData.cities[i][3]], "distance": d});
+      }
+    }
+    if (tmpCities.length > 0) {
+      tmpCities.sort(citySort);
+      return tmpCities[0];
+    } else {
+      return null;
     }
   }
 
@@ -60,6 +80,9 @@
     // putting all locations of one day together
     while (current > 0 && time2.getFullYear() == time1.getFullYear() && time2.getMonth() == time1.getMonth() && time2.getDate() == time1.getDate()) {
       location1 = locations[current];
+      if (!!cityData) {
+        con.log(findCity(location1.latitudeE7, location2.latitudeE7));
+      }
       location2 = locations[current - 1];
 
       lat1 = location1.latitudeE7 / 10000000;
@@ -102,18 +125,15 @@
     var xhr = new global.XMLHttpRequest();
 
     xhr.onreadystatechange = function () {
-      var response, text;
       if (xhr.readyState == 4) {
         if (xhr.status >= 200 && xhr.status <= 304) {
-          global.console.log("Success: " + xhr.responseText);
-          response = JSON.parse(xhr.responseText);
-          con.log(response);
-          dropbox.style.display = "none";
-          doc.getElementById("instructions").style.display = "none";
-          global.requestAnimationFrame(travel);
+          cities = JSON.parse(xhr.responseText);
         } else {
-          con.log("Couldn't fetch city data.");
+          con.log("Couldn't fetch city data, no geolocation possible.");
         }
+        dropbox.style.display = "none";
+        doc.getElementById("instructions").style.display = "none";
+        global.requestAnimationFrame(travel);
       }
     };
 
