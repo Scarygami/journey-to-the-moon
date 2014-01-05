@@ -58,7 +58,7 @@
   function findCity(lat, lon) {
     var i, tmpCities = [], d;
     for (i = 0; i < cityData.cities.length; i++) {
-      d = lazyDistance(lat, lon, cityData.cities[i].[1], cityData.cities[i].[2])
+      d = lazyDistance(lat, lon, cityData.cities[i][1], cityData.cities[i][2]);
       if (d !== false) {
         tmpCities.push({"city": cityData.cities[i][0], "country": cityData.countries[cityData.cities[i][3]], "distance": d});
       }
@@ -127,7 +127,7 @@
     xhr.onreadystatechange = function () {
       if (xhr.readyState == 4) {
         if (xhr.status >= 200 && xhr.status <= 304) {
-          cities = JSON.parse(xhr.responseText);
+          cityData = JSON.parse(xhr.responseText);
         } else {
           con.log("Couldn't fetch city data, no geolocation possible.");
         }
