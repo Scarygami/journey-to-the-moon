@@ -81,7 +81,7 @@
     while (current > 0 && time2.getFullYear() == time1.getFullYear() && time2.getMonth() == time1.getMonth() && time2.getDate() == time1.getDate()) {
       location1 = locations[current];
       if (!!cityData) {
-        con.log(findCity(location1.latitudeE7, location2.latitudeE7));
+        con.log(findCity(location1.latitudeE7, location1.longitudeE7));
       }
       location2 = locations[current - 1];
 
