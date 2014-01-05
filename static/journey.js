@@ -92,7 +92,7 @@
       current -= 1;
 
       if (!!cityData) {
-        con.log(findCity(lat1, lon1));
+        //con.log(findCity(lat1, lon1));
       }
     }
 
