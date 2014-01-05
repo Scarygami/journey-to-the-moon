@@ -37,6 +37,20 @@
     return R * c;
   }
 
+  function lazyDistance(lat1, lon1, lat2, lon2) {
+    var dLat, dLon;
+    dLat = lat2 - lat1;
+    dLon = lon2 - lon1;
+    if (dLat < 1 && dLat > -1 && dLon < 1 && dLon > -1) {
+      // Inside of 1° we can pretty much ignore curves
+      // We also only need a comparable value, so no need for Math.sqrt or converting to km
+      return dLat * dLat + dLon * dLon;
+    } else {
+      // Too big to be considered
+      return 100;
+    }
+  }
+
   function travel() {
     var location = locations[current], location1, location2, lat1, lon1, lat2, lon2, time1, time2, perc, left;
 
@@ -85,9 +99,26 @@
   }
 
   function start() {
-    dropbox.style.display = "none";
-    doc.getElementById("instructions").style.display = "none";
-    global.requestAnimationFrame(travel);
+    var xhr = new global.XMLHttpRequest();
+
+    xhr.onreadystatechange = function () {
+      var response, text;
+      if (xhr.readyState == 4) {
+        if (xhr.status >= 200 && xhr.status <= 304) {
+          global.console.log("Success: " + xhr.responseText);
+          response = JSON.parse(xhr.responseText);
+          con.log(response);
+          dropbox.style.display = "none";
+          doc.getElementById("instructions").style.display = "none";
+          global.requestAnimationFrame(travel);
+        } else {
+          con.log("Couldn't fetch city data.");
+        }
+      }
+    };
+
+    xhr.open("GET", "cities.json", true);
+    xhr.send();
   }
 
   function handleFile(file) {
@@ -109,7 +140,7 @@
           dropbox.innerHTML = "Ready for Take-off!";
           current = locations.length - 1;
           distance = 0;
-          global.setTimeout(start, 1000);
+          start();
         } else {
           dropbox.innerHTML = "Start aborted!<br>No valid location found in file.";
         }

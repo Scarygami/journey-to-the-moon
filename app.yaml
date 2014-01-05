@@ -5,6 +5,11 @@ threadsafe: true
 api_version: 1
 
 handlers:
+- url: /cities.json
+  static_files: static/cities.json
+  upload: static/cities.json
+  expiration: 100d
+
 - url: /(.*\.(html|css|js))
   static_files: static/\1
   upload: static/(.*\.(html|css|js))
