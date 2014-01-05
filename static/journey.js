@@ -80,9 +80,6 @@
     // putting all locations of one day together
     while (current > 0 && time2.getFullYear() == time1.getFullYear() && time2.getMonth() == time1.getMonth() && time2.getDate() == time1.getDate()) {
       location1 = locations[current];
-      if (!!cityData) {
-        con.log(findCity(location1.latitudeE7, location1.longitudeE7));
-      }
       location2 = locations[current - 1];
 
       lat1 = location1.latitudeE7 / 10000000;
@@ -93,6 +90,10 @@
       distance += distanceFromLatLng(lat1, lon1, lat2, lon2);
       time2 = new Date(parseInt(location2.timestampMs, 10));
       current -= 1;
+
+      if (!!cityData) {
+        con.log(findCity(lat1, lon1));
+      }
     }
 
     perc = distance / total * 100;
