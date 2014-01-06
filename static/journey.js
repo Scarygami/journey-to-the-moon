@@ -1,15 +1,35 @@
 (function (global) {
   "use strict";
   var
-    doc = global.document, con = global.console, dropbox, locations, current, currentStat, distance, dateDiv, travelledDiv, leftDiv, rocket,
-    statsDiv, total = 384400, km2miles = 0.621371, R = 6371, deg2rad = Math.PI / 180, cityData, cities = {}, countries = {}, cityCache = {};
-
-  dropbox = doc.getElementById("dropbox");
-  dateDiv = doc.getElementById("date");
-  statsDiv = doc.getElementById("stats");
-  travelledDiv = doc.getElementById("travelled");
-  leftDiv = doc.getElementById("left");
-  rocket = doc.getElementById("rocket");
+    doc = global.document,
+    con = global.console,
+    dom = {
+      "dropbox": doc.getElementById("dropbox"),
+      "date": doc.getElementById("date"),
+      "stats": doc.getElementById("stats"),
+      "statsInfo": doc.getElementById("stats_info"),
+      "cities": doc.getElementById("cities"),
+      "countries": doc.getElementById("countries"),
+      "countryChart": doc.getElementById("country_chart"),
+      "travelled": doc.getElementById("travelled"),
+      "left": doc.getElementById("left"),
+      "rocket": doc.getElementById("rocket")
+    },
+    countryChart, countryTable, cityTable,
+    locations,
+    current,
+    currentStat,
+    distance,
+    total = 384400,
+    km2miles = 0.621371,
+    R = 6371,
+    deg2rad = Math.PI / 180,
+    cityData,
+    cities = [],
+    countries = [],
+    cityCache = {},
+    cityLookup = {},
+    countryLookup = {};
 
   Date.prototype.niceDate = function () {
     var y, m, d;
@@ -82,29 +102,34 @@
     return (days > 0 ? days + "d " : "") + h + "h " + min + "m";
   }
 
+  function timeSort(a, b) {
+    return b.time - a.time;
+  }
+
   function displayStats(final) {
-    var city, country, html;
+    var i, countryData = [["Country", "Time (h)"]], cityData = [["City", "Country", "Time (h)"]];
     if (final) {
-      html = "";
+      dom.statsInfo.innerHTML = "";
     } else {
-      html = "Analyzing data... " + currentStat + " / " + locations.length + " (" + (new Date(parseInt(locations[currentStat].timestampMs, 10))).niceDate() + ") <br><br>";
+      dom.statsInfo.innerHTML = "Analyzing data... " + currentStat + " / " + locations.length + " (" + (new Date(parseInt(locations[currentStat].timestampMs, 10))).niceDate() + ")";
     }
-    for (country in countries) {
-      if (countries.hasOwnProperty(country)) {
-        html += country + ": " + formatDuration(countries[country].time) + "<br>";
-      }
+    for (i = 0; i < countries.length; i++) {
+      countryData.push([countries[i].country, Math.round(countries[i].time / 3600000)]);
     }
-    html += "<br>";
-    for (city in cities) {
-      if (cities.hasOwnProperty(city)) {
-        html += city + " / " + (cities[city].country || "Unknown country") + ": " + formatDuration(cities[city].time) + "<br>";
-      }
+
+    for (i = 0; i < cities.length; i++) {
+      cityData.push([cities[i].city, (cities[i].country || "Unknown country"), Math.round(cities[i].time / 3600000)]);
     }
-    statsDiv.innerHTML = html;
+
+    countryData = global.google.visualization.arrayToDataTable(countryData);
+    cityData = global.google.visualization.arrayToDataTable(cityData);
+    countryChart.draw(countryData, {"width": "640px"});
+    countryTable.draw(countryData, {"sortColumn": 1, "sortAscending": false});
+    cityTable.draw(cityData, {"sortColumn": 2, "sortAscending": false});
   }
 
   function cityStats() {
-    var lat, lon, d, time1, time2, city;
+    var lat, lon, d, time1, time2, city, cityKey, cityStat, countryStat;
     lat = Math.round(locations[currentStat].latitudeE7 / 10000) / 1000;
     lon = Math.round(locations[currentStat].longitudeE7 / 10000) / 1000;
 
@@ -121,15 +146,31 @@
     d = (time1 - time2) / 2;
 
     city = findCity(lat, lon);
-    if (!cities[city[0]]) {
-      cities[city[0]] = {"time": 0};
-      cities[city[0]].country = cityData.countries[city[3]] || "Unknown country";
-      if (!countries[cities[city[0]].country]) {
-        countries[cities[city[0]].country] = {"time": 0};
+    cityKey = city[0] + "/" + (city[3] || "");
+    cityStat = cityLookup[cityKey];
+    if (!cityStat) {
+      cityStat = {
+        "city": city[0],
+        "country": cityData.countries[city[3]] || "Unknown country",
+        "time": 0
+      };
+      cityLookup[cityKey] = cityStat;
+      cities.push(cityStat);
+
+      countryStat = countryLookup[cityStat.country];
+      if (!countryStat) {
+        countryStat = {
+          "country": cityStat.country,
+          "time": 0
+        };
+        countryLookup[cityStat.country] = countryStat;
+        countries.push(countryStat);
       }
+    } else {
+      countryStat = countryLookup[cityStat.country];
     }
-    cities[city[0]].time += d;
-    countries[cities[city[0]].country].time += d;
+    cityStat.time += d;
+    countryStat.time += d;
     if (currentStat % 100 === 0) {
       displayStats(false);
     }
@@ -165,21 +206,22 @@
     perc = distance / total * 100;
     if (perc > 100) { perc = 100; }
 
-    dateDiv.innerHTML = time1.niceDate();
+    dom.date.innerHTML = time1.niceDate();
 
-    travelledDiv.style.width = perc + "%";
-    leftDiv.style.width = Math.min(100 - perc, 100) + "%";
-    leftDiv.style.left = perc + "%";
-    rocket.style.left = perc + "%";
-    travelledDiv.innerHTML = distance.formatWithCommas() + " km<br>" + (distance * km2miles).formatWithCommas() + " miles";
+    dom.travelled.style.width = perc + "%";
+    dom.left.style.width = Math.min(100 - perc, 100) + "%";
+    dom.left.style.left = perc + "%";
+    dom.rocket.style.left = perc + "%";
+    dom.travelled.innerHTML = distance.formatWithCommas() + " km<br>" + (distance * km2miles).formatWithCommas() + " miles";
 
     left = total - distance;
     if (left < 0) { left = 0; }
-    leftDiv.innerHTML = left.formatWithCommas() + " km<br>" + (left * km2miles).formatWithCommas() + " miles";
+    dom.left.innerHTML = left.formatWithCommas() + " km<br>" + (left * km2miles).formatWithCommas() + " miles";
 
-    if (!travelledDiv.style.paddingRight) {
-      if (travelledDiv.offsetWidth > 25) {
-        travelledDiv.style.paddingRight = "25px";
+    if (!dom.travelled.paddingFixed) {
+      if (dom.travelled.offsetWidth > 25) {
+        dom.travelled.style.paddingRight = "25px";
+        dom.travelled.paddingFixed = true;
       }
     }
 
@@ -200,6 +242,9 @@
         }
         if (!!cityData) {
           currentStat = 0;
+          countryChart = new global.google.visualization.GeoChart(dom.countryChart);
+          countryTable = new global.google.visualization.Table(dom.countries);
+          cityTable = new global.google.visualization.Table(dom.cities);
           global.setTimeout(cityStats, 0);
         }
       }
@@ -210,7 +255,7 @@
 
     current = locations.length - 1;
     distance = 0;
-    dropbox.style.display = "none";
+    dom.dropbox.style.display = "none";
     doc.getElementById("instructions").style.display = "none";
     global.requestAnimationFrame(travel);
   }
@@ -224,20 +269,29 @@
       try {
         data = JSON.parse(eventObj.target.result);
       } catch (e) {
-        dropbox.innerHTML = "Start aborted!<br>Invalid file format.";
+        dom.dropbox.innerHTML = "Start aborted!<br>Invalid file format.";
         return;
       }
       if (data && data.locations && data.locations.length > 0) {
         // check first location for valid format
         if (data.locations[0].timestampMs && data.locations[0].latitudeE7 && data.locations[0].longitudeE7) {
           locations = data.locations;
-          dropbox.innerHTML = "Ready for Take-off!";
-          global.setTimeout(start, 500);
+          dom.dropbox.innerHTML = "Ready for Take-off!";
+          global.google.load(
+            "visualization",
+            "1",
+            {
+              "packages": ["geochart", "table"],
+              "callback": function () {
+                global.setTimeout(start, 500);
+              }
+            }
+          );
         } else {
-          dropbox.innerHTML = "Start aborted!<br>No valid location found in file.";
+          dom.dropbox.innerHTML = "Start aborted!<br>No valid location found in file.";
         }
       } else {
-        dropbox.innerHTML = "Start aborted!<br>No locations found in file.";
+        dom.dropbox.innerHTML = "Start aborted!<br>No locations found in file.";
       }
     };
 
@@ -257,20 +311,20 @@
 
     files = eventObj.dataTransfer.files;
     if (files && files.length > 0) {
-      dropbox.innerHTML = "Preparing start!";
+      dom.dropbox.innerHTML = "Preparing start!";
       handleFile(files[0]);
     }
 
-    dropbox.className = "";
+    dom.dropbox.className = "";
   }
 
-  dropbox.addEventListener("dragover", handleDragOver, false);
-  dropbox.addEventListener("drop", handleFileSelect, false);
-  dropbox.addEventListener("dragenter", function () {
-    dropbox.className = "dragging";
+  dom.dropbox.addEventListener("dragover", handleDragOver, false);
+  dom.dropbox.addEventListener("drop", handleFileSelect, false);
+  dom.dropbox.addEventListener("dragenter", function () {
+    dom.dropbox.className = "dragging";
   }, false);
-  dropbox.addEventListener("dragleave", function () {
-    dropbox.className = "";
+  dom.dropbox.addEventListener("dragleave", function () {
+    dom.dropbox.className = "";
   }, false);
 
 }(this));

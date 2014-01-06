@@ -15,6 +15,14 @@ body {
   margin-right: 50px;
 }
 
+#countries, #cities, #country_chart {
+  color: black;
+  display: inline-block;
+  margin: 10px;
+  text-align: left;
+  vertical-align: top;
+}
+
 #path {
   position: absolute;
   width: 100%;
