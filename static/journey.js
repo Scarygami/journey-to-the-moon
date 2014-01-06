@@ -1,11 +1,12 @@
 (function (global) {
   "use strict";
   var
-    doc = global.document, con = global.console, dropbox, locations, current, distance, dateDiv, travelledDiv, leftDiv, rocket,
-    total = 384400, km2miles = 0.621371, R = 6371, deg2rad = Math.PI / 180, cityData;
+    doc = global.document, con = global.console, dropbox, locations, current, currentStat, distance, dateDiv, travelledDiv, leftDiv, rocket,
+    statsDiv, total = 384400, km2miles = 0.621371, R = 6371, deg2rad = Math.PI / 180, cityData, cities = {}, countries = {}, cityCache = {};
 
   dropbox = doc.getElementById("dropbox");
   dateDiv = doc.getElementById("date");
+  statsDiv = doc.getElementById("stats");
   travelledDiv = doc.getElementById("travelled");
   leftDiv = doc.getElementById("left");
   rocket = doc.getElementById("rocket");
@@ -45,29 +46,98 @@
       // Inside of 1° we can pretty much ignore curves
       // We also only need a comparable value, so no need for Math.sqrt or converting to km
       return dLat * dLat + dLon * dLon;
-    } else {
-      // Too big to be considered
-      return false;
     }
-  }
 
-  function citySort(a, b) {
-    return (a.distance - b.distance);
+    // Too big to be considered
+    return false;
   }
 
   function findCity(lat, lon) {
-    var i, tmpCities = [], d;
+    var i, city, d, minD = 10000;
+    if (cityCache[lat + "," + lon] !== undefined) {
+      return cityCache[lat + "," + lon];
+    }
     for (i = 0; i < cityData.cities.length; i++) {
       d = lazyDistance(lat, lon, cityData.cities[i][1], cityData.cities[i][2]);
-      if (d !== false) {
-        tmpCities.push({"city": cityData.cities[i][0], "country": cityData.countries[cityData.cities[i][3]], "distance": d});
+      if (d !== false && d < minD) {
+        city = cityData.cities[i];
+        minD = d;
       }
     }
-    if (tmpCities.length > 0) {
-      tmpCities.sort(citySort);
-      return tmpCities[0];
+    if (!city) {
+      city = ["Unknown city", lat, lon, "Unknown country"];
+    }
+    cityCache[lat + "," + lon] = city;
+    return city;
+  }
+
+  function formatDuration(d) {
+    var min, h, days;
+    days = Math.floor(d / 86400000);
+    d -= days * 86400000;
+    h = Math.floor(d / 3600000);
+    d -= h * 3600000;
+    min = Math.floor(d / 60000);
+
+    return (days > 0 ? days + "d " : "") + h + "h " + min + "m";
+  }
+
+  function displayStats(final) {
+    var city, country, html;
+    if (final) {
+      html = "";
     } else {
-      return null;
+      html = "Analyzing data... " + currentStat + " / " + locations.length + " (" + (new Date(parseInt(locations[currentStat].timestampMs, 10))).niceDate() + ") <br><br>";
+    }
+    for (country in countries) {
+      if (countries.hasOwnProperty(country)) {
+        html += country + ": " + formatDuration(countries[country].time) + "<br>";
+      }
+    }
+    html += "<br>";
+    for (city in cities) {
+      if (cities.hasOwnProperty(city)) {
+        html += city + " / " + (cities[city].country || "Unknown country") + ": " + formatDuration(cities[city].time) + "<br>";
+      }
+    }
+    statsDiv.innerHTML = html;
+  }
+
+  function cityStats() {
+    var lat, lon, d, time1, time2, city;
+    lat = Math.round(locations[currentStat].latitudeE7 / 10000) / 1000;
+    lon = Math.round(locations[currentStat].longitudeE7 / 10000) / 1000;
+
+    if (currentStat === 0) {
+      time1 = parseInt(locations[currentStat].timestampMs, 10);
+    } else {
+      time1 = parseInt(locations[currentStat - 1].timestampMs, 10);
+    }
+    if (currentStat === locations.length - 1) {
+      time2 = parseInt(locations[currentStat].timestampMs, 10);
+    } else {
+      time2 = parseInt(locations[currentStat + 1].timestampMs, 10);
+    }
+    d = (time1 - time2) / 2;
+
+    city = findCity(lat, lon);
+    if (!cities[city[0]]) {
+      cities[city[0]] = {"time": 0};
+      cities[city[0]].country = cityData.countries[city[3]] || "Unknown country";
+      if (!countries[cities[city[0]].country]) {
+        countries[cities[city[0]].country] = {"time": 0};
+      }
+    }
+    cities[city[0]].time += d;
+    countries[cities[city[0]].country].time += d;
+    if (currentStat % 100 === 0) {
+      displayStats(false);
+    }
+    currentStat += 1;
+    if (currentStat < locations.length) {
+      global.setTimeout(cityStats, 0);
+    } else {
+      displayStats(true);
     }
   }
 
@@ -90,10 +160,6 @@
       distance += distanceFromLatLng(lat1, lon1, lat2, lon2);
       time2 = new Date(parseInt(location2.timestampMs, 10));
       current -= 1;
-
-      if (!!cityData) {
-        //con.log(findCity(lat1, lon1));
-      }
     }
 
     perc = distance / total * 100;
@@ -132,14 +198,21 @@
         } else {
           con.log("Couldn't fetch city data, no geolocation possible.");
         }
-        dropbox.style.display = "none";
-        doc.getElementById("instructions").style.display = "none";
-        global.requestAnimationFrame(travel);
+        if (!!cityData) {
+          currentStat = 0;
+          global.setTimeout(cityStats, 0);
+        }
       }
     };
 
     xhr.open("GET", "cities.json", true);
     xhr.send();
+
+    current = locations.length - 1;
+    distance = 0;
+    dropbox.style.display = "none";
+    doc.getElementById("instructions").style.display = "none";
+    global.requestAnimationFrame(travel);
   }
 
   function handleFile(file) {
@@ -159,9 +232,7 @@
         if (data.locations[0].timestampMs && data.locations[0].latitudeE7 && data.locations[0].longitudeE7) {
           locations = data.locations;
           dropbox.innerHTML = "Ready for Take-off!";
-          current = locations.length - 1;
-          distance = 0;
-          start();
+          global.setTimeout(start, 500);
         } else {
           dropbox.innerHTML = "Start aborted!<br>No valid location found in file.";
         }
