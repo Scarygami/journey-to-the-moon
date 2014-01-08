@@ -65,7 +65,7 @@
         contenturl: "https://journey-to-the-moon.appspot.com/p/" + p,
         clientid: "144877002275-t7mgrbuekqrbj6g4ejaac7ihot7eku5m.apps.googleusercontent.com",
         cookiepolicy: "single_host_origin",
-        prefilltext: "I'm " + p + "% on my way to the moon. How far are you?",
+        prefilltext: "I'm " + p + "% on my way to the moon. How far are you? #JourneyToTheMoon",
         calltoactionlabel: "COMPARE",
         calltoactionurl: "https://journey-to-the-moon.appspot.com/c/p/" + p
       };
