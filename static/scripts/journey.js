@@ -40,7 +40,7 @@
   };
 
   function displayStats(e) {
-    var data = e.data, countryData, cityData;
+    var data = e.data, countryData, cityData, options, p;
 
     dom.rocketExhaust.style.width = data.percent + "%";
     dom.rocket.style.left = data.percent + "%";
@@ -60,6 +60,16 @@
       countryChart.draw(countryData);
       countryTable.draw(countryData, {"sortColumn": 1, "sortAscending": false});
       cityTable.draw(cityData, {"sortColumn": 2, "sortAscending": false});
+      p = (Math.round(data.percent * 100) / 100);
+      options = {
+        contenturl: "https://journey-to-the-moon.appspot.com/p/" + p,
+        clientid: "144877002275-t7mgrbuekqrbj6g4ejaac7ihot7eku5m.apps.googleusercontent.com",
+        cookiepolicy: "single_host_origin",
+        prefilltext: "I'm " + p + "% on my way to the moon. How far are you?",
+        calltoactionlabel: "COMPARE",
+        calltoactionurl: "https://journey-to-the-moon.appspot.com/c/p/" + p
+      };
+      global.gapi.interactivepost.render("share", options);
     } else {
       dom.status.innerHTML = "Analyzing data... " + data.currentStat + " / " + data.total + " (" + data.date + ")<br><br>";
     }
@@ -89,7 +99,7 @@
       }
     };
 
-    xhr.open("GET", "/cities.json?v=3", true);
+    xhr.open("GET", "/cities.json?v=4", true);
     xhr.send();
   }
 

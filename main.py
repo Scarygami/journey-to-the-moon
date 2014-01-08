@@ -65,7 +65,7 @@ class ShareHandler(webapp2.RequestHandler):
         perc = float(p)
         self.response.out.write(TEMPLATE.render(
             {
-                "title": "Journey to the Moon - %s%% done" % perc,
+                "title": "Journey to the Moon - %s%%" % perc,
                 "image": base_url + getImage(perc),
                 "description": "I'm %s%% on my way to the moon" % perc
             }
@@ -75,15 +75,16 @@ class ShareHandler(webapp2.RequestHandler):
 class CompareHandler(webapp2.RequestHandler):
     """Renders the main page that is mainly used for authentication only so far"""
 
-    def get(self, u, p):
+    def get(self, p):
 
         perc = float(p)
         self.response.out.write(TEMPLATE.render(
             {
-                "title": "Journey to the Moon - %s%% done" % perc,
+                "title": "Journey to the Moon - %s%%" % perc,
                 "image": base_url + getImage(perc),
                 "description": "I'm %s%% on my way to the moon. How far are you?" % perc,
-                "compare": True
+                "compare": True,
+                "percent": perc
             }
         ))
 
@@ -91,5 +92,5 @@ class CompareHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ("/", IndexHandler),
     (r"/p/([0-9]*\.?[0-9]+)", ShareHandler),
-    (r"/u/([0-9]+)/p/([0-9]*\.?[0-9]+)", CompareHandler)
+    (r"/c/p/([0-9]*\.?[0-9]+)", CompareHandler)
 ], debug=True)

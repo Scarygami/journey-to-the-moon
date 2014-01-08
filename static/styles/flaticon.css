@@ -9,12 +9,13 @@
 	font-style: normal;
 }
 [class^="flaticon-"]:before, [class*=" flaticon-"]:before,
-[class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
+[class^="flaticon-"]:after, [class*=" flaticon-"]:after {
 	font-family: Flaticon;
-        font-size: 50px;
-font-style: normal;
-margin-left: 20px;
-}.flaticon-box2:before {
+    font-size: 50px;
+	font-style: normal;
+	margin-left: 20px;
+}
+.flaticon-box2:before {
 	content: "\e000";
 }
 .flaticon-earth16:before {

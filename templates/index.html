@@ -17,20 +17,45 @@
       <h3>Journey to the Moon</h3>
     </div>
     <div class="container">
+      {% if compare %}
       <div class="row">
         <div class="col-md-12">
           <div class="card">
-            <div id="journey">
-              <div id="celestialBodies">
-                  <div id="earth" class="flaticon-earth16"></div>
-                  <div id="moon" class="flaticon-moon2"></div>
+            <div class="card-heading simple">Target</div>
+            <div class="journey">
+              <div class="celestialBodies">
+                <div class="flaticon-earth16 earth"></div>
+                <div class="flaticon-moon2 moon"></div>
               </div>
-              <div id="trajectory"></div>
-              <div id="progressLayer">
-                  <div id="rocketExhaust"></div>
+              <div class="trajectory"></div>
+              <div class="progressLayer">
+                <div class="rocketExhaust" style="width: {{ percent }}%;"></div>
               </div>
-              <div id="rocketPath">
-                  <span id="rocket" class="flaticon-rocket12 rotate90"></span>
+              <div class="rocketPath">
+                <span class="rocket flaticon-rocket12 rotate90" style="left: {{ percent }}%;"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            {% if compare %}
+            <div class="card-heading simple">You</div>
+            {% endif %}
+            <div class="journey">
+              <div class="celestialBodies">
+                <div class="flaticon-earth16 earth"></div>
+                <div class="flaticon-moon2 moon"></div>
+              </div>
+              <div class="trajectory"></div>
+              <div class="progressLayer">
+                <div id="rocketExhaust" class="rocketExhaust"></div>
+              </div>
+              <div class="rocketPath">
+                <span id="rocket" class="rocket flaticon-rocket12 rotate90"></span>
               </div>
             </div>
           </div>
@@ -52,10 +77,24 @@
           </div>
         </div>
       </div>
+      <div class="row finished" style="display: none;">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body centered">
+              <button id="share">
+                <span class="icon">&nbsp;</span>
+                <span>Share your progress</span>
+              </button><br><br>
+              <p class="disclaimer">
+              Share your progress with your contacts and let them compare their progress with yours. Note that this will ask you to Sign-in and connect with your Google+ Account (unless you have already previously signed in). This is required for the <a href="https://developers.google.com/+/features/interactive-posts" target="_blank">interactive post functionality</a>. We won't store any of your data and you can visit <a href="https://plus.google.com/apps" target="_blank">plus.google.com/apps</a> to disconnect from this app completely.</p><br>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="row init running">
         <div class="col-md-12">
           <div class="card">
-            <div class="card-body" id="status">
+            <div class="card-body centered" id="status">
               Download your Location History from <a href="https://www.google.com/takeout">google.com/takeout</a> and drag the JSON file into the box below.<br>
               All data will be analysed locally on your computer, nothing is uploaded to our server.<br><br>
             </div>
@@ -102,5 +141,12 @@
       Geo-coding data licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a> by <a href="http://www.geonames.org/">geonames.org</a>
     </div>
     <script src="/scripts/journey.js"></script>
+    <script type="text/javascript">
+      (function() {
+       var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+       po.src = 'https://apis.google.com/js/client:plusone.js';
+       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+     })();
+    </script>
   </body>
 </html>

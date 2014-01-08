@@ -4,7 +4,7 @@ body {
   background-color: #f4f4f4;
 }
 
-#journey {
+.journey {
     position: relative;
     height: 70px;
     color: #6f6f6f;
@@ -12,20 +12,20 @@ body {
     margin-right: 10px;
 }
 
-#celestialBodies {
+.celestialBodies {
     position: absolute;
     left: 0px;
     right: 0px;
     z-index: 10;
 }
 
-#rocketPath {
+.rocketPath {
     position: relative;
     margin-left: 55px;
     margin-right: 120px;
 }
 
-#trajectory {
+.trajectory {
     height: 10px;
     position: absolute;
     border: 1px solid #c0c0c0;
@@ -35,14 +35,14 @@ body {
     border-radius: 5px;
 }
 
-#progressLayer {
+.progressLayer {
     position: absolute;
     left: 81px;
     right: 92px;
     top: 30px
 }
 
-#rocketExhaust {
+.rocketExhaust {
     background-image: -webkit-gradient(
         linear,
         left top,
@@ -68,25 +68,30 @@ body {
   opacity: 0;
 }
 
-#earth {
+.earth {
     position: relative;
     float: left;
 }
 
-#moon {
+.moon {
     position: relative;
     float: right;
 }
 
-#rocket {
+.rocket {
     display: block;
     position: absolute;
     line-height: 36px;
     transition: all 0.1s ease-in;
 }
 
-#status {
+.centered {
   text-align: center;
+}
+
+.disclaimer {
+  color: #777;
+  font-size: 0.9em;
 }
 
 #progressKM, #progressMiles {
@@ -101,6 +106,12 @@ body {
 .flaticon-box2:before {
     font-size: 16pt;
 }
+
+.flaticon-google26:before {
+    font-size: 16pt;
+    margin-left: 0;
+}
+
 
 #dropbox {
   border: 5px dotted #c0c0c0;
@@ -117,7 +128,6 @@ body {
   border: 5px dotted #7a7a7a;
 }
 
-
 .rotate90 {
   filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
   -webkit-transform: rotate(90deg);
@@ -127,6 +137,28 @@ body {
   transform: rotate(90deg);
 }
 
+#share {
+  padding: 5px;
+  background: #fff;
+  cursor: pointer;
+  line-height: 20px;
+  border: 1px solid #e6e6e6;
+  border-radius: 4px;
+}
+#share .icon {
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+  background: url("../images/btn_icons_sprite.png") transparent 0 -40px no-repeat;
+}
+#share:hover {
+  background-color: #cc3732;
+  color: #fff;
+  border-color: #dd4b39;
+}
+#share:hover .icon {
+  background: url("../images/btn_icons_sprite.png") transparent 0 0px no-repeat;
+}
 
 .header, .footer {
   padding-left: 15px;
@@ -145,7 +177,6 @@ body {
   line-height: 40px;
   padding-bottom: 19px;
 }
-
 
 /* Custom page footer */
 .footer {
