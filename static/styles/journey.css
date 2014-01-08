@@ -88,6 +88,9 @@ body {
   font-weight: bold;
 }
 
+.card.table {
+  padding: 0;
+}
 
 .flaticon-box2:before {
     font-size: 16pt;
