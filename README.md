@@ -21,24 +21,9 @@ the License
 
 ### Image licenses
 
-```
-Solar System Icons
-http://www.iconspedia.com/pack/solar-system-1642/
+Licensed under [CC-BY 3.0](http://creativecommons.org/licenses/by/3.0/)
 
-By: Dan Wiersema
-Website: www.danwiersema.com
-
-License:
-Free for non-commercial use.
-```
-
-```
-Rocket Icon
-http://www.iconspedia.com/icon/rocket--281.html
-
-By: Aha-Soft
-Website: www.777icons.com/libs/transport-vista-icons.htm
-
-License:
-Free for non-commercial use.
-```
+*  [Earth by Icomoon](http://www.flaticon.com/free-icon/earth_24390)
+*  [Moon by Freepik](http://www.flaticon.com/free-icon/moon_2344)
+*  [Rocket by Freepik](http://www.flaticon.com/free-icon/rocket-black-ship_28356)
+*  [Upload box by Freepik](http://www.flaticon.com/free-icon/box-with-arrow-representing-upload_567)

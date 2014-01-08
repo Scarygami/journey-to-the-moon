@@ -10,9 +10,9 @@ handlers:
   upload: static/cities.json
   expiration: 100d
 
-- url: /(.*\.(html|css|js))
+- url: /(.*\.(html|css|js|eot|svg|ttf|woff))
   static_files: static/\1
-  upload: static/(.*\.(html|css|js))
+  upload: static/(.*\.(html|css|js|eot|svg|ttf|woff))
 
 - url: /(.*\.png)
   static_files: static/\1

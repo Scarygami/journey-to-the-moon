@@ -3,29 +3,99 @@
   <head>
     <meta charset="UTF-8">
     <title>Journey to the Moon</title>
-    <link rel="stylesheet" href="journey.css">
+    <link rel="stylesheet" href="styles/bootstrap.css">
+    <link rel="stylesheet" href="styles/flaticon.css">
+    <link rel="stylesheet" href="styles/card.css">
+    <link rel="stylesheet" href="styles/journey.css">
     <script src="https://www.google.com/jsapi"></script>
   </head>
   <body>
-    <div id="journey">
-      <div id="left">384,400 km<br>238,855 miles</div>
-      <div id="travelled">0 km / 0 miles</div>
-      <div id="path">384,400 km / 238,855 miles</div>
-      <div id="date"></div>
-      <img id="moon" src="images/moon.png">
-      <img id="earth" src="images/earth.png">
-      <img id="rocket" src="images/rocket.png">
+    <div class="header">
+      <h3>Journey to the Moon</h3>
     </div>
-    <div id="stats">
-      <div id="stats_info"></div>
-      <div id="country_chart"></div>
-      <div id="countries"></div>
-      <div id="cities"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div id="journey">
+              <div id="celestialBodies">
+                  <div id="earth" class="flaticon-earth16"></div>
+                  <div id="moon" class="flaticon-moon2"></div>
+              </div>
+              <div id="trajectory"></div>
+              <div id="progressLayer">
+                  <div id="rocketExhaust"></div>
+              </div>
+              <div id="rocketPath">
+                  <span id="rocket" class="flaticon-rocket12 rotate90"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="card">
+             <div class="card-body" id="progressKM">
+               0 / 384,400 km (384,400 left)<br><br>
+             </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+             <div class="card-body" id="progressMiles">
+               0 / 238,855 miles (238,855 left)<br><br>
+             </div>
+          </div>
+        </div>
+      </div>
+      <div class="row init preparing running">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-body" id="status">
+              Download your Location History from <a href="https://www.google.com/takeout">google.com/takeout</a> and drag the JSON file into the box below.<br>
+              All data will be analysed locally on your computer, nothing is uploaded to our server.<br><br>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row running finished" style="display: none;">
+        <div class="col-md-12">
+          <div class="card">
+            <div id="country_chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row running finished" style="display: none;">
+        <div class="col-md-6">
+          <div class="card">
+            <div id="countries"></div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card">
+            <div id="cities"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row init">
+        <div class="col-md-12">
+          <div class="card">
+            <div id="dropbox"><i class="flaticon-box2"></i> <b>Start your journey here</b></div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div id="instructions">
-      Download your Location History from <a href="https://www.google.com/takeout">google.com/takeout</a> and drag the JSON file into the box below.<br>
-      All data will be analysed locally on your computer, nothing is uploaded to our server.</div>
-    <div id="dropbox">Start your journey here</div>
-    <script src="journey.js"></script>
+    <div class="footer">
+      Developed by <a href="https://google.com/+GerwinSturm">Gerwin Sturm</a> / 
+      Contributions by <a href="https://google.com/+SebastianMauer/">Sebastian Mauer</a> &amp; <a href="https://google.com/+TimWintle">Tim Wintle</a> / 
+      <a href="https://github.com/Scarygami/journey-to-the-moon">Source code on Github</a><br>
+      Images licensed under <a href="http://creativecommons.org/licenses/by/3.0/">CC-BY 3.0</a>: 
+      <a href="http://www.flaticon.com/free-icon/earth_24390">Earth by Icomoon</a>,
+      <a href="http://www.flaticon.com/free-icon/moon_2344">Moon by Freepik</a>,
+      <a href="http://www.flaticon.com/free-icon/rocket-black-ship_28356">Rocket by Freepik</a>,
+      <a href="http://www.flaticon.com/free-icon/box-with-arrow-representing-upload_567">Upload box by Freepik</a><br>      
+    </div>
+    <script src="scripts/journey.js"></script>
   </body>
 </html>
