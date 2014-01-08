@@ -96,18 +96,18 @@
           });
           setClassDisplay("preparing", "none");
           setClassDisplay("running", "block");
-          geoWorker = new global.Worker('scripts/geoWorker.js');
-          geoWorker.addEventListener('message', displayStats, false);
+          geoWorker = new global.Worker("/scripts/geoWorker.js");
+          geoWorker.addEventListener("message", displayStats, false);
           geoWorker.postMessage({locations: locations, cities: cityData});
         }
       }
     };
 
-    xhr.open("GET", "cities.json?v=3", true);
+    xhr.open("GET", "/cities.json?v=3", true);
     xhr.send();
 
-    travelWorker = new global.Worker('scripts/travelWorker.js');
-    travelWorker.addEventListener('message', updateTravel, false);
+    travelWorker = new global.Worker("/scripts/travelWorker.js");
+    travelWorker.addEventListener("message", updateTravel, false);
     travelWorker.postMessage({locations: locations});
   }
 
@@ -157,6 +157,14 @@
     eventObj.dataTransfer.dropEffect = "copy";
   }
 
+  function handleFileUpload(eventObj) {
+    var files = eventObj.target.files;
+    if (files && files.length > 0) {
+      dom.status.innerHTML = "<b>Preparing start...</b><br><br>";
+      handleFile(files[0]);
+    }
+  }
+
   function handleFileSelect(eventObj) {
     var files;
     eventObj.stopPropagation();
@@ -170,6 +178,12 @@
 
     dom.dropbox.className = "";
   }
+
+  dom.dropbox.onclick = function () {
+    doc.getElementById("upload").click();
+  };
+
+  doc.getElementById("upload").addEventListener('change', handleFileUpload, false);
 
   dom.dropbox.addEventListener("dragover", handleDragOver, false);
   dom.dropbox.addEventListener("drop", handleFileSelect, false);

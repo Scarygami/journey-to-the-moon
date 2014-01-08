@@ -19,6 +19,14 @@ handlers:
   upload: static/(.*\.png)
   mime_type: image/png
 
-- url: /
-  static_files: static/index.html
-  upload: static/index.html
+- url: /(.*\.jpg)
+  static_files: static/\1
+  upload: static/(.*\.jpg)
+  mime_type: image/jpeg
+
+- url: .*
+  script: main.app
+
+libraries:
+- name: jinja2
+  version: latest
