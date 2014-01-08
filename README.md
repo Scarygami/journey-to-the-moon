@@ -19,11 +19,13 @@ License for the specific language governing permissions and limitations under
 the License
 ```
 
-### Image licenses
+### Third-party content
 
-Licensed under [CC-BY 3.0](http://creativecommons.org/licenses/by/3.0/)
+Images licensed under [CC-BY 3.0](http://creativecommons.org/licenses/by/3.0/)
 
 *  [Earth by Icomoon](http://www.flaticon.com/free-icon/earth_24390)
 *  [Moon by Freepik](http://www.flaticon.com/free-icon/moon_2344)
 *  [Rocket by Freepik](http://www.flaticon.com/free-icon/rocket-black-ship_28356)
 *  [Upload box by Freepik](http://www.flaticon.com/free-icon/box-with-arrow-representing-upload_567)
+
+Geo-coding data licensed under [CC-BY 3.0](http://creativecommons.org/licenses/by/3.0/) by [geonames.org](http://www.geonames.org/)
