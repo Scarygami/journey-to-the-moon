@@ -103,7 +103,7 @@
       }
     };
 
-    xhr.open("GET", "cities.json?v=2", true);
+    xhr.open("GET", "cities.json?v=3", true);
     xhr.send();
 
     travelWorker = new global.Worker('scripts/travelWorker.js');
