@@ -41,32 +41,32 @@
 
   function displayStats(e) {
     var data = e.data, countryData, cityData;
+
+    dom.rocketExhaust.style.width = data.percent + "%";
+    dom.rocket.style.left = data.percent + "%";
+    dom.progressKM.innerHTML = data.distance.formatWithCommas() + " / 384,400 km (" + data.left.formatWithCommas() + " left)<br><br>";
+    dom.progressMiles.innerHTML = (data.distance * km2miles).formatWithCommas() + " / 238,855 miles (" + (data.left * km2miles).formatWithCommas() + " left)<br><br>";
+
     if (data.finished) {
       dom.status.innerHTML = "";
       setClassDisplay("running", "none");
       setClassDisplay("preparing", "none");
       setClassDisplay("finished", "block");
+      countryChart = new global.google.visualization.GeoChart(dom.countryChart);
+      countryTable = new global.google.visualization.Table(dom.countries);
+      cityTable = new global.google.visualization.Table(dom.cities);
+      countryData = global.google.visualization.arrayToDataTable(data.countryData);
+      cityData = global.google.visualization.arrayToDataTable(data.cityData);
+      countryChart.draw(countryData);
+      countryTable.draw(countryData, {"sortColumn": 1, "sortAscending": false});
+      cityTable.draw(cityData, {"sortColumn": 2, "sortAscending": false});
     } else {
       dom.status.innerHTML = "Analyzing data... " + data.currentStat + " / " + data.total + " (" + data.date + ")<br><br>";
     }
-
-    countryData = global.google.visualization.arrayToDataTable(data.countryData);
-    cityData = global.google.visualization.arrayToDataTable(data.cityData);
-    countryChart.draw(countryData);
-    countryTable.draw(countryData, {"sortColumn": 1, "sortAscending": false});
-    cityTable.draw(cityData, {"sortColumn": 2, "sortAscending": false});
-  }
-
-  function updateTravel(e) {
-    var data = e.data;
-    dom.rocketExhaust.style.width = data.percent + "%";
-    dom.rocket.style.left = data.percent + "%";
-    dom.progressKM.innerHTML = data.distance.formatWithCommas() + " / 384,400 km (" + data.left.formatWithCommas() + " left)<br><br>";
-    dom.progressMiles.innerHTML = (data.distance * km2miles).formatWithCommas() + " / 238,855 miles (" + (data.left * km2miles).formatWithCommas() + " left)<br><br>";
   }
 
   function start() {
-    var geoWorker, travelWorker, xhr;
+    var worker, xhr;
 
     xhr = new global.XMLHttpRequest();
 
@@ -75,40 +75,22 @@
       if (xhr.readyState == 4) {
         if (xhr.status >= 200 && xhr.status <= 304) {
           cityData = JSON.parse(xhr.responseText);
-        } else {
-          con.log("Couldn't fetch city data, no geolocation possible.");
-          setClassDisplay("running", "none");
-          setClassDisplay("preparing", "none");
         }
-        if (!!cityData) {
-          countryChart = new global.google.visualization.GeoChart(dom.countryChart);
-          countryTable = new global.google.visualization.Table(dom.countries);
-          cityTable = new global.google.visualization.Table(dom.cities);
-          displayStats({
-            data: {
-              countryData: [["Country", "Time (h)"]],
-              cityData: [["City", "Country", "Time (h)"]],
-              currentStat: 0,
-              total: locations.length,
-              date: (new Date(parseInt(locations[0].timestampMs, 10))).niceDate(),
-              finished: false
-            }
-          });
-          setClassDisplay("preparing", "none");
+        if (!cityData) {
+          con.log("Couldn't fetch city data, no geolocation possible.");
+          dom.status.innerHTML = "<b>Start aborted! Unexpected error...</b><br><br>";
+        } else {
+          dom.status.innerHTML = "<b>Ready for Take-off!</b><br><br>";
           setClassDisplay("running", "block");
-          geoWorker = new global.Worker("/scripts/geoWorker.js");
-          geoWorker.addEventListener("message", displayStats, false);
-          geoWorker.postMessage({locations: locations, cities: cityData});
+          worker = new global.Worker("/scripts/worker.js");
+          worker.addEventListener("message", displayStats, false);
+          worker.postMessage({locations: locations, cities: cityData});
         }
       }
     };
 
     xhr.open("GET", "/cities.json?v=3", true);
     xhr.send();
-
-    travelWorker = new global.Worker("/scripts/travelWorker.js");
-    travelWorker.addEventListener("message", updateTravel, false);
-    travelWorker.postMessage({locations: locations});
   }
 
   function handleFile(file) {
@@ -129,7 +111,7 @@
           locations = data.locations;
           dom.status.innerHTML = "<b>Preparing start...</b><br><br>";
           setClassDisplay("init", "none");
-          setClassDisplay("preparing", "block");
+          setClassDisplay("running", "block");
           global.google.load(
             "visualization",
             "1",
