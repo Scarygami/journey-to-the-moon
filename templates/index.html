@@ -46,13 +46,13 @@
             <div class="card-heading simple">You</div>
             {% endif %}
             <div class="journey">
-              <div class="celestialBodies">
-                <div class="flaticon-earth16 earth"></div>
-                <div class="flaticon-moon2 moon"></div>
-              </div>
               <div class="trajectory"></div>
               <div class="progressLayer">
                 <div id="rocketExhaust" class="rocketExhaust"></div>
+              </div>
+              <div class="celestialBodies">
+                <div class="flaticon-earth16 earth"></div>
+                <div class="flaticon-moon2 moon" id="moon"></div>
               </div>
               <div class="rocketPath">
                 <span id="rocket" class="rocket flaticon-rocket12 rotate90"></span>
@@ -105,6 +105,30 @@
         <div class="col-md-12">
           <div class="card">
             <div id="country_chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row finished" style="display: none;">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-heading simple">km per date</div>
+            <div id="date_chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row finished" style="display: none;">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-heading simple">km per weekday</div>
+            <div id="weekday_chart"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row finished" style="display: none;">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-heading simple">km per hour</div>
+            <div id="hour_chart"></div>
           </div>
         </div>
       </div>

@@ -78,13 +78,18 @@ class CompareHandler(webapp2.RequestHandler):
     def get(self, p):
 
         perc = float(p)
+        if perc > 100:
+          perc2 = 100
+        else:
+          perc2 = perc
+
         self.response.out.write(TEMPLATE.render(
             {
                 "title": "Journey to the Moon - %s%%" % perc,
                 "image": base_url + getImage(perc),
                 "description": "I'm %s%% on my way to the moon. How far are you?" % perc,
                 "compare": True,
-                "percent": perc
+                "percent": perc2
             }
         ))
 

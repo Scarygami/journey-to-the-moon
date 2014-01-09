@@ -1,9 +1,10 @@
-self.addEventListener("message", function(e) {
+self.addEventListener("message", function (e) {
   "use strict";
 
   var
     data = e.data,
     deg2rad = Math.PI / 180,
+    km2miles = 0.621371,
     total = 384400,
     R = 6371,
     current = 0,
@@ -13,7 +14,10 @@ self.addEventListener("message", function(e) {
     cityCache = {},
     cityLookup = {},
     countryLookup = {},
-    start = (new Date()).getTime();
+    hourStats = [["Hour", "Distance (km)"]],
+    weekdayStats = [["Weekday", "Distance (km)"], ["Mon", 0], ["Tue", 0], ["Wed", 0], ["Thu", 0], ["Fri", 0], ["Sat", 0], ["Sun", 0]],
+    dateStats = [["Date", "Distance (km)"]], lastDate,
+    start = (new Date()).getTime(), i;
 
   Date.prototype.niceDate = function () {
     var y, m, d;
@@ -83,27 +87,45 @@ self.addEventListener("message", function(e) {
     }
 
     perc = distance / total * 100;
-    if (perc > 100) { perc = 100; }
 
     left = total - distance;
     if (left < 0) { left = 0; }
 
-    self.postMessage({
-      type: "update",
-      cityData: cityData,
-      countryData: countryData,
-      currentStat: data.locations.length - current,
-      date: (new Date(parseInt(data.locations[current].timestampMs, 10))).niceDate(),
-      total: data.locations.length,
-      percent: perc,
-      left: left,
-      distance: distance,
-      finished: finished
-    });
+    if (finished) {
+      self.postMessage({
+        type: "final_update",
+        cityData: cityData,
+        countryData: countryData,
+        currentStat: data.locations.length - current,
+        hourStats: hourStats,
+        weekdayStats: weekdayStats,
+        dateStats: dateStats,
+        date: (new Date(parseInt(data.locations[current].timestampMs, 10))).niceDate(),
+        total: data.locations.length,
+        percent: perc,
+        left: left,
+        distance: distance,
+        finished: true
+      });
+    } else {
+      self.postMessage({
+        type: "update",
+        currentStat: data.locations.length - current,
+        date: (new Date(parseInt(data.locations[current].timestampMs, 10))).niceDate(),
+        total: data.locations.length,
+        percent: perc,
+        left: left,
+        distance: distance,
+        finished: false
+      });
+    }
   }
 
   function stats() {
-    var location1, location2, lat2, lon2, lat, lon, d, time1, time2, city, cityKey, cityStat, countryStat, now = (new Date()).getTime();
+    var
+      location1, location2, lat2, lon2, lat, lon, d, time1, time2,
+      city, cityKey, cityStat, countryStat, h, day, tmpDate,
+      now = (new Date()).getTime();
 
     // accumulate distance
     if (current > 0) {
@@ -115,7 +137,29 @@ self.addEventListener("message", function(e) {
       lat2 = location2.latitudeE7 / 10000000;
       lon2 = location1.longitudeE7 / 10000000;
 
-      distance += distanceFromLatLng(lat, lon, lat2, lon2);
+      d = distanceFromLatLng(lat, lon, lat2, lon2);
+      distance += d;
+
+      time1 = new Date(parseInt(data.locations[current].timestampMs, 10));
+      h = time1.getHours() + 1;
+      day = time1.getDay();
+      day = (day === 0) ? 7 : day;
+
+      hourStats[h][1] += d;
+      weekdayStats[day][1] += d;
+
+      if (!lastDate || time1.niceDate() !== lastDate.niceDate()) {
+        if (lastDate) {
+          tmpDate = new Date(lastDate.getTime() + 86400000);
+          while (tmpDate.niceDate() !== time1.niceDate()) {
+            dateStats.push([tmpDate.niceDate(), 0]);
+            tmpDate.setTime(tmpDate.getTime() + 86400000);
+          }
+        }
+        lastDate = time1;
+        dateStats.push([lastDate.niceDate(), 0]);
+      }
+      dateStats[dateStats.length - 1][1] += d;
     }
 
     // Find city/country
@@ -164,6 +208,10 @@ self.addEventListener("message", function(e) {
       start = now;
       displayStats(false);
     }
+  }
+
+  for (i = 0; i < 24; i++) {
+    hourStats.push([i.toString(), 0]);
   }
 
   if (data.locations && data.locations.length > 0 && data.locations[0].timestampMs && data.locations[0].latitudeE7 && data.locations[0].longitudeE7) {

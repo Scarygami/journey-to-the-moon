@@ -12,9 +12,9 @@
       "rocketExhaust": doc.getElementById("rocketExhaust"),
       "progressKM": doc.getElementById("progressKM"),
       "progressMiles": doc.getElementById("progressMiles"),
-      "rocket": doc.getElementById("rocket")
+      "rocket": doc.getElementById("rocket"),
+      "moon": doc.getElementById("moon")
     },
-    countryChart, countryTable, cityTable,
     locations,
     km2miles = 0.621371;
 
@@ -40,10 +40,14 @@
   };
 
   function displayStats(e) {
-    var data = e.data, countryData, cityData, options, p;
+    var
+      data = e.data, countryData, cityData, hourData, weekdayData, dateData,
+      options, p, countryChart, countryTable, cityTable, hourChart, weekdayChart, dateChart;
 
-    dom.rocketExhaust.style.width = data.percent + "%";
-    dom.rocket.style.left = data.percent + "%";
+    p = Math.min(data.percent, 100);
+    
+    dom.rocketExhaust.style.width = p + "%";
+    dom.rocket.style.left = p + "%";
     dom.progressKM.innerHTML = data.distance.formatWithCommas() + " / 384,400 km (" + data.left.formatWithCommas() + " left)<br><br>";
     dom.progressMiles.innerHTML = (data.distance * km2miles).formatWithCommas() + " / 238,855 miles (" + (data.left * km2miles).formatWithCommas() + " left)<br><br>";
 
@@ -55,11 +59,24 @@
       countryChart = new global.google.visualization.GeoChart(dom.countryChart);
       countryTable = new global.google.visualization.Table(dom.countries);
       cityTable = new global.google.visualization.Table(dom.cities);
+      hourChart = new global.google.visualization.AreaChart(doc.getElementById("hour_chart"));
+      weekdayChart = new global.google.visualization.AreaChart(doc.getElementById("weekday_chart"));
+      dateChart = new global.google.visualization.AreaChart(doc.getElementById("date_chart"));
       countryData = global.google.visualization.arrayToDataTable(data.countryData);
       cityData = global.google.visualization.arrayToDataTable(data.cityData);
+      hourData = global.google.visualization.arrayToDataTable(data.hourStats);
+      weekdayData = global.google.visualization.arrayToDataTable(data.weekdayStats);
+      dateData = global.google.visualization.arrayToDataTable(data.dateStats);
       countryChart.draw(countryData);
       countryTable.draw(countryData, {"sortColumn": 1, "sortAscending": false});
       cityTable.draw(cityData, {"sortColumn": 2, "sortAscending": false});
+      options = {
+        "hAxis": {"textStyle": {"fontSize": 10}},
+        "legend": {"position": "none"}
+      }
+      hourChart.draw(hourData, options);
+      weekdayChart.draw(weekdayData, options);
+      dateChart.draw(dateData, options);
       p = (Math.round(data.percent * 100) / 100);
       options = {
         contenturl: "https://journey-to-the-moon.appspot.com/p/" + p,
@@ -126,7 +143,7 @@
             "visualization",
             "1",
             {
-              "packages": ["geochart", "table"],
+              "packages": ["geochart", "table", "corechart"],
               "callback": function () {
                 global.setTimeout(start, 0);
               }

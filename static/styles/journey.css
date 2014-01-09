@@ -69,13 +69,13 @@ body {
 }
 
 .earth {
-    position: relative;
-    float: left;
+    position: absolute;
+    left: 0;
 }
 
 .moon {
-    position: relative;
-    float: right;
+    position: absolute;
+    right: 0;
 }
 
 .rocket {
