@@ -29,7 +29,7 @@ TEMPLATE = JINJA.get_template("templates/index.html")
 appname = get_application_id()
 base_url = "https://" + appname + ".appspot.com"
 
-phases = ["Moon", "Mars"]
+phases = ["the Moon", "Mars"]
 
 def getImage(phase, p):
     if phase == 0:
@@ -74,9 +74,9 @@ class ShareHandler(webapp2.RequestHandler):
             perc -= 100
 
         self.response.out.write(TEMPLATE.render({
-          "title": "Journey to the %s - %s%%" % (phases[phase], perc),
+          "title": "Journey to %s - %s%%" % (phases[phase], perc),
           "image": base_url + getImage(phase, perc),
-          "description": "I'm %s%% on my way to the %s" % (perc, phases[phase])
+          "description": "I'm %s%% on my way to %s" % (perc, phases[phase])
         }))
 
 
@@ -97,9 +97,9 @@ class CompareHandler(webapp2.RequestHandler):
           perc2 = perc
 
         self.response.out.write(TEMPLATE.render({
-            "title": "Journey to the %s - %s%%" % (phases[phase], perc),
+            "title": "Journey to %s - %s%%" % (phases[phase], perc),
             "image": base_url + getImage(phase, perc),
-            "description": "I'm %s%% on my way to the %s. How far are you?" % (perc, phases[phase]),
+            "description": "I'm %s%% on my way to %s. How far are you?" % (perc, phases[phase]),
             "compare": True,
             "percent": perc2,
             "phase": phase + 1

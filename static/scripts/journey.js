@@ -19,7 +19,7 @@
     locations,
     km2miles = 0.621371,
     phase = 0,
-    goal = ["Moon", "Mars"];
+    goal = ["the Moon", "Mars"];
 
   function setClassDisplay(className, display) {
     var i, elems = doc.getElementsByClassName(className);
@@ -53,7 +53,7 @@
       phase = data.phase;
       dom.journey.className = "journey phase" + (phase + 1);
       dom.goal.innerHTML = goal[phase];
-      doc.title = "Journey to the " + goal[phase];
+      doc.title = "Journey to " + goal[phase];
     }
 
     dom.rocketExhaust.style.width = p + "%";
@@ -99,8 +99,8 @@
         clientid: "144877002275-t7mgrbuekqrbj6g4ejaac7ihot7eku5m.apps.googleusercontent.com",
         cookiepolicy: "single_host_origin",
         prefilltext:
-          "I'm " + p + "% on my way to the " + goal[phase] + ". " +
-          "How far are you? #JourneyToTheMoon" + (phase > 0 ? (" #JourneyTothe" + goal[phase]) : ""),
+          "I'm " + p + "% on my way to " + goal[phase] + ". " +
+          "How far are you? #JourneyToTheMoon" + (phase > 0 ? (" #JourneyTo" + goal[phase]) : ""),
         calltoactionlabel: "COMPARE",
         calltoactionurl: "https://journey-to-the-moon.appspot.com/c/p/" + (p + phase * 100)
       };

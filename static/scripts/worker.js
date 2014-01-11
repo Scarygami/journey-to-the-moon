@@ -9,7 +9,7 @@ self.addEventListener("message", function (e) {
     total = [384400, 563000000],
     R = 6371,
     current = 0,
-    distance = 0,
+    distance = 50390000,
     cities = [],
     countries = [],
     cityCache = {},
