@@ -29,23 +29,28 @@ TEMPLATE = JINJA.get_template("templates/index.html")
 appname = get_application_id()
 base_url = "https://" + appname + ".appspot.com"
 
-def getImage(p):
-    if p <= 10:
-        return "/images/0.jpg"
-    if p <= 30:
-        return "/images/20.jpg"
-    if p <= 50:
-        return "/images/40.jpg"
-    if p <= 70:
-        return "/images/60.jpg"
-    if p <= 90:
-        return "/images/80.jpg"
+phases = ["Moon", "Mars"]
 
-    return "/images/100.jpg"
+def getImage(phase, p):
+    if phase == 0:
+        if p <= 15:
+            return "/images/0.jpg"
+        if p <= 30:
+            return "/images/20.jpg"
+        if p <= 45:
+            return "/images/40.jpg"
+        if p <= 60:
+            return "/images/60.jpg"
+        if p <= 80:
+            return "/images/80.jpg"
+
+        return "/images/100.jpg"
+
+    return "/images/beyond.jpg"
 
 
 class IndexHandler(webapp2.RequestHandler):
-    """Renders the main page that is mainly used for authentication only so far"""
+    """Renders the main page without any extras"""
 
     def get(self):
 
@@ -58,40 +63,47 @@ class IndexHandler(webapp2.RequestHandler):
         ))
 
 class ShareHandler(webapp2.RequestHandler):
-    """Renders the main page that is mainly used for authentication only so far"""
+    """Renders the main page with snippet info for sharing"""
 
     def get(self, p):
 
         perc = float(p)
-        self.response.out.write(TEMPLATE.render(
-            {
-                "title": "Journey to the Moon - %s%%" % perc,
-                "image": base_url + getImage(perc),
-                "description": "I'm %s%% on my way to the moon" % perc
-            }
-        ))
+        phase = 0
+        while (perc > 100 and phase < len(phases) - 1):
+            phase += 1
+            perc -= 100
+
+        self.response.out.write(TEMPLATE.render({
+          "title": "Journey to the %s - %s%%" % (phases[phase], perc),
+          "image": base_url + getImage(phase, perc),
+          "description": "I'm %s%% on my way to the %s" % (perc, phases[phase])
+        }))
 
 
 class CompareHandler(webapp2.RequestHandler):
-    """Renders the main page that is mainly used for authentication only so far"""
+    """Renders the main page and displays a comparison"""
 
     def get(self, p):
 
         perc = float(p)
+        phase = 0
+        while (perc > 100 and phase < len(phases) - 1):
+            phase += 1
+            perc -= 100
+
         if perc > 100:
           perc2 = 100
         else:
           perc2 = perc
 
-        self.response.out.write(TEMPLATE.render(
-            {
-                "title": "Journey to the Moon - %s%%" % perc,
-                "image": base_url + getImage(perc),
-                "description": "I'm %s%% on my way to the moon. How far are you?" % perc,
-                "compare": True,
-                "percent": perc2
-            }
-        ))
+        self.response.out.write(TEMPLATE.render({
+            "title": "Journey to the %s - %s%%" % (phases[phase], perc),
+            "image": base_url + getImage(phase, perc),
+            "description": "I'm %s%% on my way to the %s. How far are you?" % (perc, phases[phase]),
+            "compare": True,
+            "percent": perc2,
+            "phase": phase + 1
+        }))
 
 
 app = webapp2.WSGIApplication([

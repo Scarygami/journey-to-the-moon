@@ -3,9 +3,10 @@ self.addEventListener("message", function (e) {
 
   var
     data = e.data,
+    phase = 0,
     deg2rad = Math.PI / 180,
     km2miles = 0.621371,
-    total = 384400,
+    total = [384400, 563000000],
     R = 6371,
     current = 0,
     distance = 0,
@@ -86,9 +87,14 @@ self.addEventListener("message", function (e) {
       cityData.push([cities[i].city, (cities[i].country || "Unknown country"), Math.round(cities[i].time / 3600000)]);
     }
 
-    perc = distance / total * 100;
+    perc = distance / total[phase] * 100;
 
-    left = total - distance;
+    if (perc > 100 && phase < total.length - 1) {
+      phase += 1;
+      perc = distance / total[phase] * 100;
+    }
+
+    left = total[phase] - distance;
     if (left < 0) { left = 0; }
 
     if (finished) {
@@ -97,14 +103,16 @@ self.addEventListener("message", function (e) {
         cityData: cityData,
         countryData: countryData,
         currentStat: data.locations.length - current,
+        totalStats: data.locations.length,
         hourStats: hourStats,
         weekdayStats: weekdayStats,
         dateStats: dateStats,
         date: (new Date(parseInt(data.locations[current].timestampMs, 10))).niceDate(),
-        total: data.locations.length,
         percent: perc,
         left: left,
         distance: distance,
+        total: total[phase],
+        phase: phase,
         finished: true
       });
     } else {
@@ -112,9 +120,11 @@ self.addEventListener("message", function (e) {
         type: "update",
         currentStat: data.locations.length - current,
         date: (new Date(parseInt(data.locations[current].timestampMs, 10))).niceDate(),
-        total: data.locations.length,
+        totalStats: data.locations.length,
         percent: perc,
         left: left,
+        total: total[phase],
+        phase: phase,
         distance: distance,
         finished: false
       });

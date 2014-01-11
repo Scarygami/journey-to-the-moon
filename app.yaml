@@ -8,24 +8,29 @@ handlers:
 - url: /cities.json
   static_files: static/cities.json
   upload: static/cities.json
+  secure: always
   expiration: 100d
 
 - url: /(.*\.(html|css|js|eot|svg|ttf|woff|ico))
   static_files: static/\1
   upload: static/(.*\.(html|css|js|eot|svg|ttf|woff|ico))
+  secure: always
 
 - url: /(.*\.png)
   static_files: static/\1
   upload: static/(.*\.png)
   mime_type: image/png
+  secure: always
 
 - url: /(.*\.jpg)
   static_files: static/\1
   upload: static/(.*\.jpg)
   mime_type: image/jpeg
+  secure: always
 
 - url: .*
   script: main.app
+  secure: always
 
 libraries:
 - name: jinja2

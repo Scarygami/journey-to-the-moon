@@ -13,10 +13,13 @@
       "progressKM": doc.getElementById("progressKM"),
       "progressMiles": doc.getElementById("progressMiles"),
       "rocket": doc.getElementById("rocket"),
-      "moon": doc.getElementById("moon")
+      "journey": doc.getElementById("journey"),
+      "goal": doc.getElementById("goal")
     },
     locations,
-    km2miles = 0.621371;
+    km2miles = 0.621371,
+    phase = 0,
+    goal = ["Moon", "Mars"];
 
   function setClassDisplay(className, display) {
     var i, elems = doc.getElementsByClassName(className);
@@ -45,11 +48,24 @@
       options, p, countryChart, countryTable, cityTable, hourChart, weekdayChart, dateChart;
 
     p = Math.min(data.percent, 100);
-    
+
+    if (phase !== data.phase) {
+      phase = data.phase;
+      dom.journey.className = "journey phase" + (phase + 1);
+      dom.goal.innerHTML = goal[phase];
+      doc.title = "Journey to the " + goal[phase];
+    }
+
     dom.rocketExhaust.style.width = p + "%";
     dom.rocket.style.left = p + "%";
-    dom.progressKM.innerHTML = data.distance.formatWithCommas() + " / 384,400 km (" + data.left.formatWithCommas() + " left)<br><br>";
-    dom.progressMiles.innerHTML = (data.distance * km2miles).formatWithCommas() + " / 238,855 miles (" + (data.left * km2miles).formatWithCommas() + " left)<br><br>";
+    dom.progressKM.innerHTML =
+      data.distance.formatWithCommas() + " / " +
+      data.total.formatWithCommas() + " km<br>(" +
+      data.left.formatWithCommas() + " left)<br><br>";
+    dom.progressMiles.innerHTML =
+      (data.distance * km2miles).formatWithCommas() + " / " +
+      (data.total * km2miles).formatWithCommas() + " miles<br>(" +
+      (data.left * km2miles).formatWithCommas() + " left)<br><br>";
 
     if (data.finished) {
       dom.status.innerHTML = "";
@@ -73,22 +89,24 @@
       options = {
         "hAxis": {"textStyle": {"fontSize": 10}},
         "legend": {"position": "none"}
-      }
+      };
       hourChart.draw(hourData, options);
       weekdayChart.draw(weekdayData, options);
       dateChart.draw(dateData, options);
       p = (Math.round(data.percent * 100) / 100);
       options = {
-        contenturl: "https://journey-to-the-moon.appspot.com/p/" + p,
+        contenturl: "https://journey-to-the-moon.appspot.com/p/" + (p + phase * 100),
         clientid: "144877002275-t7mgrbuekqrbj6g4ejaac7ihot7eku5m.apps.googleusercontent.com",
         cookiepolicy: "single_host_origin",
-        prefilltext: "I'm " + p + "% on my way to the moon. How far are you? #JourneyToTheMoon",
+        prefilltext:
+          "I'm " + p + "% on my way to the " + goal[phase] + ". " +
+          "How far are you? #JourneyToTheMoon" + (phase > 0 ? (" #JourneyTothe" + goal[phase]) : ""),
         calltoactionlabel: "COMPARE",
-        calltoactionurl: "https://journey-to-the-moon.appspot.com/c/p/" + p
+        calltoactionurl: "https://journey-to-the-moon.appspot.com/c/p/" + (p + phase * 100)
       };
       global.gapi.interactivepost.render("share", options);
     } else {
-      dom.status.innerHTML = "Analyzing data... " + data.currentStat + " / " + data.total + " (" + data.date + ")<br><br>";
+      dom.status.innerHTML = "Analyzing data... " + data.currentStat + " / " + data.totalStats + " (" + data.date + ")<br><br>";
     }
   }
 

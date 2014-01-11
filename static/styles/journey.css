@@ -69,13 +69,44 @@ body {
 }
 
 .earth {
-    position: absolute;
-    left: 0;
+  position: absolute;
+  left: 0;
+  transition: all 0.1s ease-in;
 }
 
 .moon {
-    position: absolute;
-    right: 0;
+  position: absolute;
+  right: 0;
+  transition: all 0.1s ease-in;
+}
+
+.mars {
+  position: absolute;
+  right: 0;
+  display: none;
+}
+
+.phase2 .mars {
+  display: block;
+}
+
+.phase2 .earth {
+  -ms-transform: scale(0.5);
+  -webkit-transform: scale(0.5);
+  transform: scale(0.5);
+}
+
+.phase2 .moon {
+  right: 100%;
+  -ms-transform: scale(0.25);
+  -webkit-transform: scale(0.25);
+  transform: scale(0.25);
+  margin-right: -95px;
+  margin-top: 15px;
+}
+
+.flaticon-moon21:before {
+    color: #D44;
 }
 
 .rocket {

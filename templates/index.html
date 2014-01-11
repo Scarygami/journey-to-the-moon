@@ -14,7 +14,7 @@
   </head>
   <body>
     <div class="header">
-      <h3>Journey to the Moon</h3>
+      <h3>Journey to the <span id="goal">Moon</span></h3>
     </div>
     <div class="container">
       {% if compare %}
@@ -22,10 +22,11 @@
         <div class="col-md-12">
           <div class="card">
             <div class="card-heading simple">Target</div>
-            <div class="journey">
+            <div class="journey phase{{ phase }}">
               <div class="celestialBodies">
                 <div class="flaticon-earth16 earth"></div>
                 <div class="flaticon-moon2 moon"></div>
+                <div class="flaticon-moon21 mars"></div>
               </div>
               <div class="trajectory"></div>
               <div class="progressLayer">
@@ -45,14 +46,15 @@
             {% if compare %}
             <div class="card-heading simple">You</div>
             {% endif %}
-            <div class="journey">
+            <div class="journey" id="journey">
               <div class="trajectory"></div>
               <div class="progressLayer">
                 <div id="rocketExhaust" class="rocketExhaust"></div>
               </div>
               <div class="celestialBodies">
                 <div class="flaticon-earth16 earth"></div>
-                <div class="flaticon-moon2 moon" id="moon"></div>
+                <div class="flaticon-moon2 moon"></div>
+                <div class="flaticon-moon21 mars"></div>
               </div>
               <div class="rocketPath">
                 <span id="rocket" class="rocket flaticon-rocket12 rotate90"></span>
@@ -65,14 +67,14 @@
         <div class="col-md-6">
           <div class="card">
              <div class="card-body" id="progressKM">
-               0 / 384,400 km (384,400 left)<br><br>
+               0 / 384,400 km<br>(384,400 left)<br><br>
              </div>
           </div>
         </div>
         <div class="col-md-6">
           <div class="card">
              <div class="card-body" id="progressMiles">
-               0 / 238,855 miles (238,855 left)<br><br>
+               0 / 238,855 miles<br>(238,855 left)<br><br>
              </div>
           </div>
         </div>
