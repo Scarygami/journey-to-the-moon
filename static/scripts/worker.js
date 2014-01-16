@@ -145,7 +145,7 @@ self.addEventListener("message", function (e) {
       lat = location1.latitudeE7 / 10000000;
       lon = location1.longitudeE7 / 10000000;
       lat2 = location2.latitudeE7 / 10000000;
-      lon2 = location1.longitudeE7 / 10000000;
+      lon2 = location2.longitudeE7 / 10000000;
 
       d = distanceFromLatLng(lat, lon, lat2, lon2);
       distance += d;
